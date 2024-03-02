@@ -47,9 +47,9 @@
                     .setLngLat(coordinates)
                     .setHTML(`<strong>${title}</strong><br>Artist: ${artist}<br>Year: ${year}`)
                     .addTo(map);
-});
-
             });
+
+        });
 
             // Change the cursor to a pointer when the mouse is over the artLocations layer
             map.on('mouseenter', 'artLocations', function () {
@@ -60,7 +60,7 @@
             map.on('mouseleave', 'artLocations', function () {
                 map.getCanvas().style.cursor = '';
             });
-        });
+        ;
     </script>
 </body>
 </html>
