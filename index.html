@@ -36,15 +36,19 @@
             });
             // Add popups
             map.on('click', 'artLocations', function (e) {
+                console.log(e.features[0].properties.artistname);  // Log the artist name
+                // Rest of the click event code...
                 var coordinates = e.features[0].geometry.coordinates.slice();
                 var title = e.features[0].properties.title_of_work;
-                var artist = e.features[0].properties.artistname;
+                var artist = e.features[0].properties.artistname;  // Access the artistname property
                 var year = e.features[0].properties.yearofinstallation;
 
                 new mapboxgl.Popup()
                     .setLngLat(coordinates)
                     .setHTML(`<strong>${title}</strong><br>Artist: ${artist}<br>Year: ${year}`)
                     .addTo(map);
+});
+
             });
 
             // Change the cursor to a pointer when the mouse is over the artLocations layer
