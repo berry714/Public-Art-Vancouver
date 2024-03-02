@@ -38,7 +38,7 @@
             map.on('click', 'artLocations', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice();
                 var title = e.features[0].properties.title_of_work;
-                var artist = e.features[0].properties.ArtistInfo.FirstName + ' ' + e.features[0].properties.ArtistInfo.LastName;
+                var artist = e.features[0].properties.artistname;
                 var year = e.features[0].properties.yearofinstallation;
 
                 new mapboxgl.Popup()
