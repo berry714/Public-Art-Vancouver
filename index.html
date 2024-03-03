@@ -26,7 +26,7 @@
         });
 
         map.addLayer({
-            id: 'artLocations',
+            id: 'publicArt', // Corrected layer ID
             type: 'circle',
             source: 'publicArt',
             paint: {
@@ -36,7 +36,7 @@
         });
 
         // Add popups
-        map.on('click', 'artLocations', function (e) {
+        map.on('click', 'publicArt', function (e) {
             const coordinates = e.features[0].geometry.coordinates.slice();
             const title = e.features[0].properties.title_of_work;
             const artistNames = e.features[0].properties.ArtistNames || [];
@@ -56,13 +56,13 @@
                 .addTo(map);
         });
 
-        // Change the cursor to a pointer when the mouse is over the artLocations layer
-        map.on('mouseenter', 'artLocations', function () {
+        // Change the cursor to a pointer when the mouse is over the publicArt layer
+        map.on('mouseenter', 'publicArt', function () {
             map.getCanvas().style.cursor = 'pointer';
         });
 
         // Change it back to a pointer when it leaves
-        map.on('mouseleave', 'artLocations', function () {
+        map.on('mouseleave', 'publicArt', function () {
             map.getCanvas().style.cursor = '';
         });
 
