@@ -37,11 +37,18 @@
             // Add a popup with title, artist names, and year on click
             map.on('click', 'publicArt', function (e) {
                 const properties = e.features[0].properties;
+                let artistNames = properties.ArtistNames;
+
+                // Check if ArtistNames is an array and join without brackets
+                if (Array.isArray(artistNames)) {
+                    artistNames = artistNames.join(', ');
+                }
+
                 new mapboxgl.Popup()
                     .setLngLat(e.features[0].geometry.coordinates)
                     .setHTML(`
                         <strong>${properties.title_of_work}</strong><br>
-                        Artists: ${properties.ArtistNames || 'N/A'}<br>
+                        Artists: ${artistNames || 'N/A'}<br>
                         Year: ${properties.yearofinstallation || 'N/A'}
                     `)
                     .addTo(map);
