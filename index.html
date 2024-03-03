@@ -38,14 +38,15 @@
         map.on('click', 'artLocations', function (e) {
             var coordinates = e.features[0].geometry.coordinates.slice();
             var title = e.features[0].properties.title_of_work;
-            var artist = e.features[0].properties.ArtistInfo;
+            var artistInfo = e.features[0].properties.ArtistInfo;
+            var artistNames = artistInfo.map(artist => artist.artistname).join(', ');
             var year = e.features[0].properties.yearofinstallation;
 
             new mapboxgl.Popup()
                 .setLngLat(coordinates)
-                .setHTML(`<strong>${title}</strong><br>Artist Information: ${artist}<br>Year: ${year}`)
+                .setHTML(`<strong>${title}</strong><br>Artist: ${artistNames}<br>Year: ${year}`)
                 .addTo(map);
-        });
+            });
 
     });
 
