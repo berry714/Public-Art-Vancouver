@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
 </head>
+
 <body>
     <div id="map" style="width: 100%; height: 600px;"></div>
     <script>
@@ -17,6 +19,8 @@
             center: [-123.1207, 49.2827], // Longitude, latitude of Vancouver
             zoom: 10
         });
+
+        let popup; // Declare popup outside the event listeners
 
         map.on('load', function () {
             map.addSource('publicArt', {
@@ -34,61 +38,57 @@
                 }
             });
 
-// Declare popup outside the event listeners
-let popup;
+            // Add popups
+            map.on('click', 'publicArt', function (e) {
+                const coordinates = e.features[0].geometry.coordinates.slice();
+                const title = e.features[0].properties.title_of_work;
+                const artistNames = formatArtists(e.features[0].properties.ArtistNames);
+                const year = e.features[0].properties.yearofinstallation;
+                const projectStatement = e.features[0].properties.artistprojectstatement || 'N/A';
+                const description = e.features[0].properties.descriptionofwork || 'N/A';
+                const photoCredits = e.features[0].properties.photocredits || 'N/A';
 
-// Add popups
-map.on('click', 'publicArt', function (e) {
-    const coordinates = e.features[0].geometry.coordinates.slice();
-    const title = e.features[0].properties.title_of_work;
+                // Remove existing popups before opening a new one
+                if (popup) {
+                    popup.remove();
+                }
 
-    let artistNames = e.features[0].properties.ArtistNames;
+                popup = new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames}<br>Year: ${year || 'N/A'}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
+                    .addTo(map);
+            });
 
-    // Check if ArtistNames is an array, join without brackets
-    if (Array.isArray(artistNames)) {
-        // Filter out 'None' and join the names
-        artistNames = artistNames.filter(name => name !== 'None');
-        artistNames = artistNames.length > 0 ? artistNames.join(', ') : 'N/A';
-    } else {
-        // Handle the case when it's a string and 'None'
-        artistNames = artistNames === 'None' ? 'N/A' : artistNames;
-    }
+            // Change the cursor to a pointer when the mouse is over the publicArt layer
+            map.on('mouseenter', 'publicArt', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
 
-    const year = e.features[0].properties.yearofinstallation;
-    const projectStatement = e.features[0].properties.artistprojectstatement || 'N/A';
-    const description = e.features[0].properties.descriptionofwork || 'N/A';
-    const photoCredits = e.features[0].properties.photocredits || 'N/A';
+            // Reset the cursor when it leaves the publicArt layer
+            map.on('mouseleave', 'publicArt', function () {
+                map.getCanvas().style.cursor = '';
+            });
 
-    // Remove existing popups before opening a new one
-    if (popup) {
-        popup.remove();
-    }
-
-    popup = new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames}<br>Year: ${year || 'N/A'}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
-        .addTo(map);
-});
-
-// Change the cursor to a pointer when the mouse is over the publicArt layer
-map.on('mouseenter', 'publicArt', function () {
-    map.getCanvas().style.cursor = 'pointer';
-});
-
-// Reset the cursor when it leaves the publicArt layer
-map.on('mouseleave', 'publicArt', function () {
-    map.getCanvas().style.cursor = '';
-});
-
-// Close the popup on map click
-map.on('click', function () {
-    if (popup) {
-        popup.remove();
-    }
-});
-
-
+            // Close the popup on map click
+            map.on('click', function () {
+                if (popup) {
+                    popup.remove();
+                }
+            });
         });
+
+        function formatArtists(artistNames) {
+            if (!artistNames || artistNames === 'None') {
+                return 'N/A';
+            }
+
+            if (Array.isArray(artistNames)) {
+                return artistNames.filter(name => name !== 'None').join(', ');
+            }
+
+            return artistNames;
+        }
     </script>
 </body>
+
 </html>
