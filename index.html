@@ -34,11 +34,14 @@
                 }
             });
 
-// Replace the existing 'click' event listener code with this updated version
+// Declare popup outside the event listeners
+let popup;
+
+// Add popups
 map.on('click', 'publicArt', function (e) {
     const coordinates = e.features[0].geometry.coordinates.slice();
     const title = e.features[0].properties.title_of_work;
-    
+
     let artistNames = e.features[0].properties.ArtistNames;
 
     // Check if ArtistNames is an array, join without brackets
@@ -66,6 +69,24 @@ map.on('click', 'publicArt', function (e) {
         .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames}<br>Year: ${year || 'N/A'}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
         .addTo(map);
 });
+
+// Change the cursor to a pointer when the mouse is over the publicArt layer
+map.on('mouseenter', 'publicArt', function () {
+    map.getCanvas().style.cursor = 'pointer';
+});
+
+// Reset the cursor when it leaves the publicArt layer
+map.on('mouseleave', 'publicArt', function () {
+    map.getCanvas().style.cursor = '';
+});
+
+// Close the popup on map click
+map.on('click', function () {
+    if (popup) {
+        popup.remove();
+    }
+});
+
 
         });
     </script>
