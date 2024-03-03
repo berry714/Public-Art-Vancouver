@@ -36,42 +36,43 @@
         });
 
         // Add popups
-        map.on('click', 'publicArt', function (e) {
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            const title = e.features[0].properties.title_of_work;
-            const artistNames = e.features[0].properties.ArtistNames || [];
-            const year = e.features[0].properties.yearofinstallation;
-            const projectStatement = e.features[0].properties.artistprojectstatement || 'N/A';
-            const description = e.features[0].properties.descriptionofwork || 'N/A';
-            const photoCredits = e.features[0].properties.photocredits || 'N/A';
+map.on('click', 'publicArt', function (e) {
+    const coordinates = e.features[0].geometry.coordinates.slice();
+    const title = e.features[0].properties.title_of_work;
+    const artistNames = e.features[0].properties.ArtistNames || [];
+    const year = e.features[0].properties.yearofinstallation;
+    const projectStatement = e.features[0].properties.artistprojectstatement || 'N/A';
+    const description = e.features[0].properties.descriptionofwork || 'N/A';
+    const photoCredits = e.features[0].properties.photocredits || 'N/A';
 
-            // Remove existing popups before opening a new one
-            if (map.getPopup()) {
-                map.getPopup().remove();
-            }
+    // Remove existing popups before opening a new one
+    if (map.getPopup()) {
+        map.getPopup().remove();
+    }
 
-            new mapboxgl.Popup()
-                .setLngLat(coordinates)
-                .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames.filter(name => name !== 'None').join(', ')}<br>Year: ${year}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
-                .addTo(map);
-        });
+    new mapboxgl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames.filter(name => name !== 'None').join(', ')}<br>Year: ${year}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
+        .addTo(map);
+});
 
-        // Change the cursor to a pointer when the mouse is over the publicArt layer
-        map.on('mouseenter', 'publicArt', function () {
-            map.getCanvas().style.cursor = 'pointer';
-        });
+// Change the cursor to a pointer when the mouse is over the publicArt layer
+map.on('mousemove', 'publicArt', function () {
+    map.getCanvas().style.cursor = 'pointer';
+});
 
-        // Change it back to a pointer when it leaves
-        map.on('mouseleave', 'publicArt', function () {
-            map.getCanvas().style.cursor = '';
-        });
+// Reset the cursor when it leaves the publicArt layer
+map.on('mouseleave', 'publicArt', function () {
+    map.getCanvas().style.cursor = '';
+});
 
-        // Close the popup on map click
-        map.on('click', function () {
-            if (map.getPopup()) {
-                map.getPopup().remove();
-            }
-        });
+// Close the popup on map click
+map.on('click', function () {
+    if (map.getPopup()) {
+        map.getPopup().remove();
+    }
+});
+
     });
   </script>
 </body>
