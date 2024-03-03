@@ -51,11 +51,6 @@
                 const description = e.features[0].properties.descriptionofwork || 'N/A';
                 const photoCredits = e.features[0].properties.photocredits || 'N/A';
 
-                // Remove existing popups before opening a new one
-                if (popup) {
-                    popup.remove();
-                }
-
                 popup = new mapboxgl.Popup()
                     .setLngLat(coordinates)
                     .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames.filter(name => name !== 'None').join(', ')}<br>Year: ${year}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
