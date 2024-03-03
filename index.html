@@ -34,15 +34,23 @@
                 }
             });
 
-            // Add a popup with title, artist names, and year on click
+            // Add a popup with all details including the photo on click
             map.on('click', 'publicArt', function (e) {
                 const properties = e.features[0].properties;
+                const photoURL = properties.photourl && properties.photourl.filename
+                    ? `https://covapp.vancouver.ca/PublicArtRegistry/Images/${properties.photourl.filename}`
+                    : 'No photo available';
+
                 new mapboxgl.Popup()
                     .setLngLat(e.features[0].geometry.coordinates)
                     .setHTML(`
                         <strong>${properties.title_of_work}</strong><br>
                         Artists: ${properties.ArtistNames || 'N/A'}<br>
-                        Year: ${properties.yearofinstallation || 'N/A'}
+                        Year: ${properties.yearofinstallation || 'N/A'}<br>
+                        Project Statement: ${properties.artistprojectstatement || 'N/A'}<br>
+                        Description: ${properties.descriptionofwork || 'N/A'}<br>
+                        Photocredits: ${properties.photocredits || 'N/A'}<br>
+                        <img src="${photoURL}" alt="Artwork Photo" style="max-width: 100%; max-height: 200px;">
                     `)
                     .addTo(map);
             });
