@@ -41,12 +41,7 @@
             // Add popups
             map.on('click', 'publicArt', function (e) {
                 const coordinates = e.features[0].geometry.coordinates.slice();
-                const title = e.features[0].properties.title_of_work;
-                const artistNames = formatArtists(e.features[0].properties.ArtistNames);
-                const year = e.features[0].properties.yearofinstallation;
-                const projectStatement = e.features[0].properties.artistprojectstatement || 'N/A';
-                const description = e.features[0].properties.descriptionofwork || 'N/A';
-                const photoCredits = e.features[0].properties.photocredits || 'N/A';
+                const artistNames = e.features[0].properties.ArtistNames;
 
                 // Remove existing popups before opening a new one
                 if (popup) {
@@ -55,7 +50,7 @@
 
                 popup = new mapboxgl.Popup()
                     .setLngLat(coordinates)
-                    .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames}<br>Year: ${year || 'N/A'}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
+                    .setHTML(`<strong>Artists:</strong> ${artistNames || 'N/A'}`)
                     .addTo(map);
             });
 
@@ -76,14 +71,6 @@
                 }
             });
         });
-
-        function formatArtists(artistNames) {
-            if (!artistNames || artistNames.toLowerCase() === 'none') {
-                return 'N/A';
-            }
-
-            return artistNames.replace(/(\[|\])/g, ''); // Remove brackets
-        }
     </script>
 </body>
 
