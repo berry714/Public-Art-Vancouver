@@ -1,88 +1,84 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vancouver Public Art Map</title>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vancouver Public Art Map</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
 </head>
 <body>
-  <div id="map" style="width: 100%; height: 600px;"></div>
-  <script>
-    mapboxgl.accessToken = 'pk.eyJ1Ijoiam9uYXRoYW53ZXN0YmVycnkiLCJhIjoiY2x0OWR4Z3k4MGg2dTJpcDlwc2o0ZXFvayJ9.Muok1VdFLcaVekq6lWlzrA';
-    const map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/jonathanwestberry/clt9l2gw600k501o84gvj0ajk',
-        center: [-123.1207, 49.2827], // Longitude, latitude of Vancouver
-        zoom: 10
-    });
-
-    map.on('load', function () {
-        map.addSource('publicArt', {
-            type: 'geojson',
-            data: 'joined_public_art.geojson' // Corrected file name
+    <div id="map" style="width: 100%; height: 600px;"></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1Ijoiam9uYXRoYW53ZXN0YmVycnkiLCJhIjoiY2x0OWR4Z3k4MGg2dTJpcDlwc2o0ZXFvayJ9.Muok1VdFLcaVekq6lWlzrA';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/jonathanwestberry/clt9l2gw600k501o84gvj0ajk',
+            center: [-123.1207, 49.2827], // Longitude, latitude of Vancouver
+            zoom: 10
         });
 
-        map.addLayer({
-            id: 'publicArt', // Corrected layer ID
-            type: 'circle',
-            source: 'publicArt',
-            paint: {
-                'circle-radius': 6,
-                'circle-color': '#B42222'
-            }
+        let popup; // Declare popup outside the event listeners
+
+        map.on('load', function () {
+            map.addSource('publicArt', {
+                type: 'geojson',
+                data: 'joined_public_art.geojson' // Corrected file name
+            });
+
+            map.addLayer({
+                id: 'publicArt', // Corrected layer ID
+                type: 'circle',
+                source: 'publicArt',
+                paint: {
+                    'circle-radius': 6,
+                    'circle-color': '#B42222'
+                }
+            });
+
+            // Add popups
+            map.on('click', 'publicArt', function (e) {
+                const coordinates = e.features[0].geometry.coordinates.slice();
+                const title = e.features[0].properties.title_of_work;
+                
+                // Check if artistNames is an array before using filter
+                const artistNames = Array.isArray(e.features[0].properties.ArtistNames)
+                    ? e.features[0].properties.ArtistNames
+                    : [e.features[0].properties.ArtistNames];
+
+                const year = e.features[0].properties.yearofinstallation;
+                const projectStatement = e.features[0].properties.artistprojectstatement || 'N/A';
+                const description = e.features[0].properties.descriptionofwork || 'N/A';
+                const photoCredits = e.features[0].properties.photocredits || 'N/A';
+
+                // Remove existing popups before opening a new one
+                if (popup) {
+                    popup.remove();
+                }
+
+                popup = new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames.filter(name => name !== 'None').join(', ')}<br>Year: ${year}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
+                    .addTo(map);
+            });
+
+            // Change the cursor to a pointer when the mouse is over the publicArt layer
+            map.on('mouseenter', 'publicArt', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Reset the cursor when it leaves the publicArt layer
+            map.on('mouseleave', 'publicArt', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+            // Close the popup on map click
+            map.on('click', function () {
+                if (popup) {
+                    popup.remove();
+                }
+            });
         });
-
-        // Initialize a variable to store the popup
-        let popup;
-
-      // Add popups
-        map.on('click', 'publicArt', function (e) {
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            const title = e.features[0].properties.title_of_work;
-            
-            // Check if artistNames is an array before using filter
-            const artistNames = Array.isArray(e.features[0].properties.ArtistNames)
-                ? e.features[0].properties.ArtistNames
-                : [e.features[0].properties.ArtistNames];
-
-            const year = e.features[0].properties.yearofinstallation;
-            const projectStatement = e.features[0].properties.artistprojectstatement || 'N/A';
-            const description = e.features[0].properties.descriptionofwork || 'N/A';
-            const photoCredits = e.features[0].properties.photocredits || 'N/A';
-
-            // Remove existing popups before opening a new one
-            if (map.getPopup()) {
-                map.getPopup().remove();
-            }
-
-            new mapboxgl.Popup()
-                .setLngLat(coordinates)
-                .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames.filter(name => name !== 'None').join(', ')}<br>Year: ${year}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
-                .addTo(map);
-        });
-
-
-        // Change the cursor to a pointer when the mouse is over the publicArt layer
-        map.on('mouseenter', 'publicArt', function () {
-            map.getCanvas().style.cursor = 'pointer';
-        });
-
-        // Reset the cursor when it leaves the publicArt layer
-        map.on('mouseleave', 'publicArt', function () {
-            map.getCanvas().style.cursor = '';
-        });
-
-        // Close the popup on map click
-        map.on('click', function () {
-            if (popup) {
-                popup.remove();
-            }
-        });
-    });
-  </script>
+    </script>
 </body>
 </html>
