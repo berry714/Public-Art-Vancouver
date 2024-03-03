@@ -40,11 +40,13 @@
                 new mapboxgl.Popup()
                     .setLngLat(e.features[0].geometry.coordinates)
                     .setHTML(`
-                    <h2><strong>${properties.title_of_work}</strong></h2>
-                    <span><strong>Artists:</strong> ${properties.ArtistNames || 'N/A'}</span><br>
-                    <span><strong>Year:</strong> ${properties.yearofinstallation || 'N/A'}</span><br>
-                    <span><strong>Project Statement:</strong> ${properties.artistprojectstatement || 'N/A'}</span><br>
-                    <a href="${properties.url}" target="_blank">More details</a>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                            <h2><strong>${properties.title_of_work}</strong></h2>
+                            <span><strong>Artists:</strong> ${properties.ArtistNames || 'N/A'}</span><br>
+                            <span><strong>Year:</strong> ${properties.yearofinstallation || 'N/A'}</span><br>
+                            <span><strong>Project Statement:</strong> ${properties.artistprojectstatement || 'N/A'}</span><br>
+                            <a href="${properties.url}" target="_blank">More details</a>
+                        </div>
                     `)
                     .addTo(map);
             });
