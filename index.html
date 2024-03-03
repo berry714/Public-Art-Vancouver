@@ -22,7 +22,7 @@
     map.on('load', function () {
         map.addSource('publicArt', {
             type: 'geojson',
-            data: 'join_public_art.geojson'
+            data: 'public_art.geojson'
         });
 
         map.addLayer({
@@ -38,13 +38,12 @@
         map.on('click', 'artLocations', function (e) {
             const coordinates = e.features[0].geometry.coordinates.slice();
             const title = e.features[0].properties.title_of_work;
-            const artistInfo = e.features[0].properties.ArtistInfo;
-            const artistNames = artistInfo.map(artist => artist.artistname).join(', ');
+            const filename = e.features[0].properties.filename;
             const year = e.features[0].properties.yearofinstallation;
 
             new mapboxgl.Popup()
                 .setLngLat(coordinates)
-                .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames}<br>Year: ${year}`)
+                .setHTML(`<strong>${title}</strong><br>Art Info: ${filename}<br>Year: ${year}`)
                 .addTo(map);
         });
 
