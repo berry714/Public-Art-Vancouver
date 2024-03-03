@@ -41,11 +41,14 @@
             const title = e.features[0].properties.title_of_work;
             const artistname = e.features[0].properties.ArtistNames; // Corrected property access
             const year = e.features[0].properties.yearofinstallation;
+            const projectStatement = e.features[0].properties.artistprojectstatement || 'N/A'; // Handle possible 'None'
+            const description = e.features[0].properties.descriptionofwork || 'N/A'; // Handle possible 'None'
+            const photoCredits = e.features[0].properties.photocredits || 'N/A'; // Handle possible 'None'
 
-            new mapboxgl.Popup()
-                .setLngLat(coordinates)
-                .setHTML(`<strong>${title}</strong><br>Art Info: ${artistname}<br>Year: ${year}`)
-                .addTo(map);
+        new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames.filter(name => name !== 'None').join(', ')}<br>Year: ${year}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
+            .addTo(map);
         });
 
 
