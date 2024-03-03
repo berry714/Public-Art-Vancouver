@@ -34,11 +34,16 @@
                 }
             });
 
-            // Add a simple popup on click
+            // Add a popup with title, artist names, and year on click
             map.on('click', 'publicArt', function (e) {
+                const properties = e.features[0].properties;
                 new mapboxgl.Popup()
                     .setLngLat(e.features[0].geometry.coordinates)
-                    .setHTML(`<strong>${e.features[0].properties.title_of_work}</strong>`)
+                    .setHTML(`
+                        <strong>${properties.title_of_work}</strong><br>
+                        Artists: ${properties.ArtistNames || 'N/A'}<br>
+                        Year: ${properties.yearofinstallation || 'N/A'}
+                    `)
                     .addTo(map);
             });
         });
