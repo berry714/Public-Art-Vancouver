@@ -39,7 +39,7 @@
                 const properties = e.features[0].properties;
 
                 // Process artist names to remove square brackets and quotes
-                const artistNames = properties.ArtistNames
+                const artistNames = Array.isArray(properties.ArtistNames)
                     ? properties.ArtistNames.map(name => name.replace(/[\[\]"]/g, ''))
                     : ['N/A'];
 
