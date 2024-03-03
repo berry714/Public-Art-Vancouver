@@ -39,27 +39,32 @@
         // Initialize a variable to store the popup
         let popup;
 
-        // Add popups
+      // Add popups
         map.on('click', 'publicArt', function (e) {
             const coordinates = e.features[0].geometry.coordinates.slice();
             const title = e.features[0].properties.title_of_work;
-            const artistNames = e.features[0].properties.ArtistNames || [];
+            
+            // Check if artistNames is an array before using filter
+            const artistNames = Array.isArray(e.features[0].properties.ArtistNames)
+                ? e.features[0].properties.ArtistNames
+                : [e.features[0].properties.ArtistNames];
+
             const year = e.features[0].properties.yearofinstallation;
             const projectStatement = e.features[0].properties.artistprojectstatement || 'N/A';
             const description = e.features[0].properties.descriptionofwork || 'N/A';
             const photoCredits = e.features[0].properties.photocredits || 'N/A';
 
-            // Close existing popup if it exists
-            if (popup) {
-                popup.remove();
+            // Remove existing popups before opening a new one
+            if (map.getPopup()) {
+                map.getPopup().remove();
             }
 
-            // Create a new popup
-            popup = new mapboxgl.Popup()
+            new mapboxgl.Popup()
                 .setLngLat(coordinates)
                 .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames.filter(name => name !== 'None').join(', ')}<br>Year: ${year}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
                 .addTo(map);
         });
+
 
         // Change the cursor to a pointer when the mouse is over the publicArt layer
         map.on('mouseenter', 'publicArt', function () {
