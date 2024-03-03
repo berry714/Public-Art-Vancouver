@@ -35,7 +35,7 @@
             }
         });
 
-        // Add popups
+// Add popups
 map.on('click', 'publicArt', function (e) {
     const coordinates = e.features[0].geometry.coordinates.slice();
     const title = e.features[0].properties.title_of_work;
@@ -57,7 +57,7 @@ map.on('click', 'publicArt', function (e) {
 });
 
 // Change the cursor to a pointer when the mouse is over the publicArt layer
-map.on('mousemove', 'publicArt', function () {
+map.on('mouseenter', 'publicArt', function () {
     map.getCanvas().style.cursor = 'pointer';
 });
 
@@ -72,6 +72,7 @@ map.on('click', function () {
         map.getPopup().remove();
     }
 });
+
 
     });
   </script>
