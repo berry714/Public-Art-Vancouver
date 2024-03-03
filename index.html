@@ -34,25 +34,39 @@
                 }
             });
 
-            // Add a popup with title, artist names, and year on click
-            map.on('click', 'publicArt', function (e) {
-                const properties = e.features[0].properties;
-                let artistNames = properties.ArtistNames;
+// Replace the existing 'click' event listener code with this updated version
+map.on('click', 'publicArt', function (e) {
+    const coordinates = e.features[0].geometry.coordinates.slice();
+    const title = e.features[0].properties.title_of_work;
+    
+    let artistNames = e.features[0].properties.ArtistNames;
 
-                // Check if ArtistNames is an array and join without brackets
-                if (Array.isArray(artistNames)) {
-                    artistNames = artistNames.join(', ');
-                }
+    // Check if ArtistNames is an array, join without brackets
+    if (Array.isArray(artistNames)) {
+        // Filter out 'None' and join the names
+        artistNames = artistNames.filter(name => name !== 'None');
+        artistNames = artistNames.length > 0 ? artistNames.join(', ') : 'N/A';
+    } else {
+        // Handle the case when it's a string and 'None'
+        artistNames = artistNames === 'None' ? 'N/A' : artistNames;
+    }
 
-                new mapboxgl.Popup()
-                    .setLngLat(e.features[0].geometry.coordinates)
-                    .setHTML(`
-                        <strong>${properties.title_of_work}</strong><br>
-                        Artists: ${artistNames || 'N/A'}<br>
-                        Year: ${properties.yearofinstallation || 'N/A'}
-                    `)
-                    .addTo(map);
-            });
+    const year = e.features[0].properties.yearofinstallation;
+    const projectStatement = e.features[0].properties.artistprojectstatement || 'N/A';
+    const description = e.features[0].properties.descriptionofwork || 'N/A';
+    const photoCredits = e.features[0].properties.photocredits || 'N/A';
+
+    // Remove existing popups before opening a new one
+    if (popup) {
+        popup.remove();
+    }
+
+    popup = new mapboxgl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(`<strong>${title}</strong><br>Artists: ${artistNames}<br>Year: ${year || 'N/A'}<br>Project Statement: ${projectStatement}<br>Description: ${description}<br>Photocredits: ${photoCredits}<br>`)
+        .addTo(map);
+});
+
         });
     </script>
 </body>
