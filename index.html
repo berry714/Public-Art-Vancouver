@@ -45,45 +45,23 @@
                 // Create a cluster layer
                 map.addLayer({
                     id: 'clusters',
-                    type: 'circle',
-                    source: 'publicArt',
-                    filter: ['has', 'point_count'],
-                    paint: {
-                        'circle-color': [
-                            'step',
-                            ['get', 'point_count'],
-                            '#51bbd6',
-                            10,
-                            '#f1f075',
-                            20,
-                            '#f28cb1'
-                        ],
-                        'circle-radius': [
-                            'step',
-                            ['get', 'point_count'],
-                            20,
-                            10,
-                            30,
-                            20,
-                            40
-                        ]
-                    }
-                });
-
-                // Create a layer for individual points
-                map.addLayer({
-                    id: 'cluster-count',
                     type: 'symbol',
                     source: 'publicArt',
                     filter: ['has', 'point_count'],
                     layout: {
+                        'icon-image': 'art-gallery-icon', // reference the custom icon
+                        'icon-size': 0.8, // Adjust size to fit better
                         'text-field': '{point_count_abbreviated}',
                         'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                        'text-size': 12
+                        'text-size': 12,
+                        'text-allow-overlap': true,
+                    },
+                    paint: {
+                        'text-color': '#ffffff' // Color of the text
                     }
                 });
 
-                // Add the public art layer
+                // Create a layer for individual points
                 map.addLayer({
                     id: 'publicArt',
                     type: 'symbol',
