@@ -6,6 +6,11 @@
     <title>Vancouver Public Art Map</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+    <style>
+        .mapboxgl-popup-content {
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div id="map" style="width: 100%; height: 600px;"></div>
@@ -34,33 +39,33 @@
                 }
             });
 
-          // Add a popup with all details
-          map.on('click', 'publicArt', function (e) {
-            const properties = e.features[0].properties;
-            const popupContent = `
-                <div style="max-height: 300px; overflow-y: auto;">
-                    <h2><strong>${properties.title_of_work}</strong></h2>
-                    <span><strong>Artists:</strong> ${properties.ArtistNames || 'N/A'}</span><br>
-                    <span><strong>Year:</strong> ${properties.yearofinstallation || 'N/A'}</span><br>
-                    <span><strong>Project Statement:</strong> ${properties.artistprojectstatement || 'N/A'}</span><br>
-                    <a href="${properties.url}" target="_blank">More details</a>
-                </div>
-            `;
+            // Add a popup with all details
+            map.on('click', 'publicArt', function (e) {
+                const properties = e.features[0].properties;
+                const popupContent = `
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        <h2><strong>${properties.title_of_work}</strong></h2>
+                        <span><strong>Artists:</strong> ${properties.ArtistNames || 'N/A'}</span><br>
+                        <span><strong>Year:</strong> ${properties.yearofinstallation || 'N/A'}</span><br>
+                        <span><strong>Project Statement:</strong> ${properties.artistprojectstatement || 'N/A'}</span><br>
+                        <a href="${properties.url}" target="_blank">More details</a>
+                    </div>
+                `;
 
-            const popup = new mapboxgl.Popup()
-                .setLngLat(e.features[0].geometry.coordinates)
-                .setHTML(popupContent)
-                .addTo(map);
+                const popup = new mapboxgl.Popup()
+                    .setLngLat(e.features[0].geometry.coordinates)
+                    .setHTML(popupContent)
+                    .addTo(map);
 
-            // Add a delay to ensure that the scroll position is set after the content has been fully rendered
-            setTimeout(() => {
-                const popupContentDiv = document.querySelector('.mapboxgl-popup-content > div');
-                if (popupContentDiv) {
-                    popupContentDiv.scrollTop = 0;
-                }
-            }, 100); // You can adjust the delay (in milliseconds) as needed
+                // Add a delay to ensure that the scroll position is set after the content has been fully rendered
+                setTimeout(() => {
+                    const popupContentDiv = document.querySelector('.mapboxgl-popup-content > div');
+                    if (popupContentDiv) {
+                        popupContentDiv.scrollTop = 0;
+                    }
+                }, 100); // You can adjust the delay (in milliseconds) as needed
+            });
         });
-});
     </script>
 </body>
 </html>
