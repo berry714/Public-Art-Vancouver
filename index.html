@@ -31,13 +31,13 @@
                 if (error) throw error;
 
                 // Add the custom icon to the map style.
-                map.addImage('icons/art-gallery-icon', image);
+                map.addImage('icons/art-gallery.png', image);
 
                 // Load the custom selected icon
                 map.loadImage('icons/art-gallery-yellow.png', function (err, selectedImage) {
                     if (err) throw err;
 
-                    map.addImage('icons.art-gallery-selected-icon', selectedImage);
+                    map.addImage('icons/art-gallery-yellow.png', selectedImage);
 
                     // Add the public art data source
                     map.addSource('publicArt', {
