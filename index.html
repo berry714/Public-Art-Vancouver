@@ -150,6 +150,11 @@
                                 popupContentDiv.scrollTop = 0;
                             }
                         }, 10); // delay (in milliseconds)
+                        
+                        // Add an event listener for the close event of the popup
+                         popup.on('close', function () {
+                            selectedFeatureId = null; // Reset selected feature ID
+                        });
                     });
 
                     // Change the cursor to a pointer when hovering over cluster or unclustered point
