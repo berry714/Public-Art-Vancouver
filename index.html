@@ -6,6 +6,7 @@
     <title>Vancouver Public Art Map</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+    <script src="https://unpkg.com/supercluster"></script>
     <style>
         .mapboxgl-popup-content:hover {
             cursor: pointer;
@@ -34,7 +35,10 @@
                 // Add the public art data source
                 map.addSource('publicArt', {
                     type: 'geojson',
-                    data: 'joined_public_art.geojson'
+                    data: 'joined_public_art.geojson',
+                    cluster: true,
+                    clusterMaxZoom: 14,
+                    clusterRadius: 50
                 });
 
                 // Add the public art layer
@@ -44,43 +48,54 @@
                     source: 'publicArt',
                     layout: {
                         'icon-image': 'art-gallery-icon', // reference the custom icon
-                        'icon-size': {
-                            stops: [
-                                [10, 0.5], // Adjust the size at different zoom levels
-                                [15, 1.5]
-                            ]
-                        }
-                    },
-                    paint: {
-                        'circle-radius': 0 // Set circle radius to 0 to remove red circles
+                        'icon-size': 1
                     }
                 });
 
                 // Popup
                 map.on('click', 'publicArt', function (e) {
-                    const properties = e.features[0].properties;
-                    const popupContent = `
-                        <div style="max-height: 300px; overflow-y: auto;">
-                            <h3><strong>${properties.title_of_work}</strong></h3>
-                            <span><strong>Artists:</strong> ${properties.ArtistNames || 'N/A'}</span><br>
-                            <span><strong>Year:</strong> ${properties.yearofinstallation || 'N/A'}</span><br>
-                            <span><strong>Project Statement:</strong> ${properties.artistprojectstatement || 'N/A'}</span><br>
-                            <a href="${properties.url}" target="_blank">More details</a>
-                        </div>
-                    `;
+                    const features = map.queryRenderedFeatures(e.point, {
+                        layers: ['publicArt']
+                    });
+                    const clusterId = features[0].properties.cluster_id;
 
-                    const popup = new mapboxgl.Popup()
-                        .setLngLat(e.features[0].geometry.coordinates)
-                        .setHTML(popupContent)
-                        .addTo(map);
+                    if (clusterId) {
+                        // Handle click on a cluster
+                        const clusterExpansionZoom = map.getSource('publicArt').getClusterExpansionZoom(
+                            clusterId,
+                            map.getZoom()
+                        );
 
-                    // Add a delay to ensure that the scroll position is set after the content has been fully rendered
-                    setTimeout(() => {
-                        const popupContentDiv = document.querySelector('.mapboxgl-popup-content > div');
-                        if (popupContentDiv) {
-                            popupContentDiv.scrollTop = 0;
-                        }
-                    }, 10); // delay (in milliseconds)
+                        map.easeTo({
+                            center: features[0].geometry.coordinates,
+                            zoom: clusterExpansionZoom
+                        });
+                    } else {
+                        // Handle click on a single point
+                        const properties = features[0].properties;
+                        const popupContent = `
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <h3><strong>${properties.title_of_work}</strong></h3>
+                                <span><strong>Artists:</strong> ${properties.ArtistNames || 'N/A'}</span><br>
+                                <span><strong>Year:</strong> ${properties.yearofinstallation || 'N/A'}</span><br>
+                                <span><strong>Project Statement:</strong> ${properties.artistprojectstatement || 'N/A'}</span><br>
+                                <a href="${properties.url}" target="_blank">More details</a>
+                            </div>
+                        `;
+
+                        const popup = new mapboxgl.Popup()
+                            .setLngLat(features[0].geometry.coordinates)
+                            .setHTML(popupContent)
+                            .addTo(map);
+
+                        // Add a delay to ensure that the scroll position is set after the content has been fully rendered
+                        setTimeout(() => {
+                            const popupContentDiv = document.querySelector('.mapboxgl-popup-content > div');
+                            if (popupContentDiv) {
+                                popupContentDiv.scrollTop = 0;
+                            }
+                        }, 10); // delay (in milliseconds)
+                    }
                 });
 
                 // Add a hover effect to indicate clickable points
