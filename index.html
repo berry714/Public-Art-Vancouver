@@ -70,24 +70,23 @@
                     }
                 });
 
-                // Create a layer for cluster count
-                map.addLayer({
-                    id: 'cluster-count',
-                    type: 'symbol',
-                    source: 'publicArt',
-                    filter: ['has', 'point_count'],
-                    layout: {
-                        'text-field': '{point_count_abbreviated}',
-                        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                        'text-size': 12,
-                        'text-allow-overlap': true,
-                        'icon-image': 'art-gallery-icon',
-                        'icon-size': 0.8,
-                    },
-                    paint: {
-                        'text-color': '#ffffff',
-                    }
-                });
+            // Create a layer for cluster count
+            map.addLayer({
+                id: 'cluster-count',
+                type: 'symbol',
+                source: 'publicArt',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': '{point_count_abbreviated}',
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12,
+                    'text-allow-overlap': true,
+                },
+                paint: {
+                    'text-color': '#ffffff',
+                }
+            });
+
 
                 // Create a layer for individual points
                 map.addLayer({
