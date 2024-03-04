@@ -7,7 +7,8 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
     <style>
-        .mapboxgl-popup-content {
+        /* Add a custom cursor style for clickable points */
+        .mapboxgl-popup-content:hover {
             cursor: pointer;
         }
     </style>
@@ -64,6 +65,16 @@
                         popupContentDiv.scrollTop = 0;
                     }
                 }, 100); // You can adjust the delay (in milliseconds) as needed
+            });
+
+            // Add a hover effect to indicate clickable points
+            map.on('mouseenter', 'publicArt', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Reset cursor when not hovering over clickable points
+            map.on('mouseleave', 'publicArt', function () {
+                map.getCanvas().style.cursor = '';
             });
         });
     </script>
