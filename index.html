@@ -87,10 +87,11 @@
                     source: 'publicArt',
                     filter: ['!', ['has', 'point_count']],
                     layout: {
-                        'icon-image': image,
+                        'icon-image': 'icons/art-gallery.png', // specify the image directly
                         'icon-size': 1.2
                     }
                 });
+
 
                 // Popup
                 map.on('click', 'clusters', function (e) {
