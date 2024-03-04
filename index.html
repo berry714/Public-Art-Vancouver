@@ -27,17 +27,17 @@
 
         map.on('load', function () {
             // Load the custom icon
-            map.loadImage('art-gallery.png', function (error, image) {
+            map.loadImage('icons/art-gallery.png', function (error, image) {
                 if (error) throw error;
 
                 // Add the custom icon to the map style.
-                map.addImage('art-gallery-icon', image);
+                map.addImage('icons/art-gallery-icon', image);
 
                 // Load the custom selected icon
-                map.loadImage('art-gallery-yellow.png', function (err, selectedImage) {
+                map.loadImage('icons/art-gallery-yellow.png', function (err, selectedImage) {
                     if (err) throw err;
 
-                    map.addImage('art-gallery-selected-icon', selectedImage);
+                    map.addImage('icons.art-gallery-selected-icon', selectedImage);
 
                     // Add the public art data source
                     map.addSource('publicArt', {
