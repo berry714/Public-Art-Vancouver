@@ -36,8 +36,8 @@
                     type: 'geojson',
                     data: 'joined_public_art.geojson',
                     cluster: true, // Enable clustering
-                    clusterMaxZoom: 14, // Max zoom to cluster points on
-                    clusterRadius: 50 // Radius of each cluster when clustering points
+                    clusterMaxZoom: 10, // Max zoom to cluster points on
+                    clusterRadius: 25 // Radius of each cluster when clustering points
                 });
 
                 // Add the clustered public art layer
@@ -88,7 +88,13 @@
                     filter: ['!', ['has', 'point_count']],
                     layout: {
                         'icon-image': 'icons/art-gallery.png', // specify the image directly
-                        'icon-size': 1.2
+                        'icon-size': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            10, 0.7, // default size at zoom level 10
+                            18, 1.4   // increase size at zoom level 18
+                        ]
                     }
                 });
 
