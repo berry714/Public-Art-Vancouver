@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +6,6 @@
     <title>Vancouver Public Art Map</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
-    <script src="https://unpkg.com/supercluster@7.1.2/dist/supercluster.min.js"></script>
     <style>
         .mapboxgl-popup-content:hover {
             cursor: pointer;
@@ -20,7 +18,7 @@
         mapboxgl.accessToken = 'pk.eyJ1Ijoiam9uYXRoYW53ZXN0YmVycnkiLCJhIjoiY2x0OWR4Z3k4MGg2dTJpcDlwc2o0ZXFvayJ9.Muok1VdFLcaVekq6lWlzrA';
         const map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/jonathanwestberry/cltcg7biy00ny01oi4fbeaxzc',
+            style: 'mapbox://styles/jonathanwestberry/clt9l2gw600k501o84gvj0ajk',
             center: [-123.1207, 49.2827], // Vancouver
             zoom: 10
         });
@@ -36,84 +34,26 @@
                 // Add the public art data source
                 map.addSource('publicArt', {
                     type: 'geojson',
-                    data: 'joined_public_art.geojson',
-                    cluster: true,
-                    clusterMaxZoom: 14,
-                    clusterRadius: 50
+                    data: 'joined_public_art.geojson'
                 });
 
-                // Create a cluster layer
-                map.addLayer({
-                    id: 'clusters',
-                    type: 'circle',
-                    source: 'publicArt',
-                    filter: ['has', 'point_count'],
-                    paint: {
-                        'circle-color': [
-                            'step',
-                            ['get', 'point_count'],
-                            '#51bbd6',
-                            10,
-                            '#f1f075',
-                            20,
-                            '#f28cb1'
-                        ],
-                        'circle-radius': [
-                            'step',
-                            ['get', 'point_count'],
-                            20,
-                            10,
-                            30,
-                            20,
-                            40
-                        ]
-                    }
-                });
-
-            // Create a layer for cluster count
-            map.addLayer({
-                id: 'cluster-count',
-                type: 'symbol',
-                source: 'publicArt',
-                filter: ['has', 'point_count'],
-                layout: {
-                    'text-field': '{point_count_abbreviated}',
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 12,
-                    'text-allow-overlap': true,
-                },
-                paint: {
-                    'text-color': '#ffffff',
-                }
-            });
-
-
-                // Create a layer for individual points
+                // Add the public art layer
                 map.addLayer({
                     id: 'publicArt',
                     type: 'symbol',
                     source: 'publicArt',
                     layout: {
                         'icon-image': 'art-gallery-icon', // reference the custom icon
-                        'icon-size': 1,
-                        'icon-allow-overlap': true, // Allow icons to overlap
+                        'icon-size': {
+                            stops: [
+                                [10, 0.5], // Adjust the size at different zoom levels
+                                [15, 1.5]
+                            ]
+                        }
                     }
                 });
 
                 // Popup
-                map.on('click', 'clusters', function (e) {
-                    const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-                    const clusterId = features[0].properties.cluster_id;
-                    map.getSource('publicArt').getClusterExpansionZoom(clusterId, function (err, zoom) {
-                        if (err) return;
-
-                        map.easeTo({
-                            center: features[0].geometry.coordinates,
-                            zoom: zoom
-                        });
-                    });
-                });
-
                 map.on('click', 'publicArt', function (e) {
                     const properties = e.features[0].properties;
                     const popupContent = `
