@@ -70,7 +70,7 @@
                     }
                 });
 
-                // Create a layer for individual points
+                // Create a layer for cluster count
                 map.addLayer({
                     id: 'cluster-count',
                     type: 'symbol',
@@ -79,11 +79,17 @@
                     layout: {
                         'text-field': '{point_count_abbreviated}',
                         'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                        'text-size': 12
+                        'text-size': 12,
+                        'text-allow-overlap': true,
+                        'icon-image': 'art-gallery-icon',
+                        'icon-size': 0.8,
+                    },
+                    paint: {
+                        'text-color': '#ffffff',
                     }
                 });
 
-                // Add the public art layer
+                // Create a layer for individual points
                 map.addLayer({
                     id: 'publicArt',
                     type: 'symbol',
