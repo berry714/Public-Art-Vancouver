@@ -34,27 +34,84 @@
                 // Add the public art data source
                 map.addSource('publicArt', {
                     type: 'geojson',
-                    data: 'joined_public_art.geojson'
+                    data: 'joined_public_art.geojson',
+                    cluster: true, // Enable clustering
+                    clusterMaxZoom: 14, // Max zoom to cluster points on
+                    clusterRadius: 50 // Radius of each cluster when clustering points
                 });
 
-                // Add the public art layer
+                // Add the clustered public art layer
                 map.addLayer({
-                    id: 'publicArt',
+                    id: 'clusters',
+                    type: 'circle',
+                    source: 'publicArt',
+                    filter: ['has', 'point_count'], // Only display clusters
+                    paint: {
+                        'circle-color': [
+                            'step',
+                            ['get', 'point_count'],
+                            '#51bbd6',
+                            10,
+                            '#f1f075',
+                            20,
+                            '#f28cb1'
+                        ],
+                        'circle-radius': [
+                            'step',
+                            ['get', 'point_count'],
+                            20,
+                            10,
+                            30,
+                            20,
+                            40
+                        ]
+                    }
+                });
+
+                // Add the cluster count layer
+                map.addLayer({
+                    id: 'cluster-count',
                     type: 'symbol',
                     source: 'publicArt',
+                    filter: ['has', 'point_count'],
                     layout: {
-                        'icon-image': 'art-gallery-icon', // reference the custom icon
-                        'icon-size': {
-                            stops: [
-                                [10, 0.5], // Adjust the size at different zoom levels
-                                [15, 1.5]
-                            ]
-                        }
+                        'text-field': '{point_count_abbreviated}',
+                        'text-size': 12
+                    }
+                });
+
+                // Add the unclustered public art layer
+                map.addLayer({
+                    id: 'unclustered-point',
+                    type: 'symbol',
+                    source: 'publicArt',
+                    filter: ['!', ['has', 'point_count']],
+                    layout: {
+                        'icon-image': 'art-gallery-icon',
+                        'icon-size': 0.5
                     }
                 });
 
                 // Popup
-                map.on('click', 'publicArt', function (e) {
+                map.on('click', 'clusters', function (e) {
+                    const features = map.queryRenderedFeatures(e.point, {
+                        layers: ['clusters']
+                    });
+                    const clusterId = features[0].properties.cluster_id;
+                    map.getSource('publicArt').getClusterExpansionZoom(
+                        clusterId,
+                        function (err, zoom) {
+                            if (err) return;
+
+                            map.easeTo({
+                                center: features[0].geometry.coordinates,
+                                zoom: zoom
+                            });
+                        }
+                    );
+                });
+
+                map.on('click', 'unclustered-point', function (e) {
                     const properties = e.features[0].properties;
                     const popupContent = `
                         <div style="max-height: 300px; overflow-y: auto;">
@@ -80,13 +137,17 @@
                     }, 10); // delay (in milliseconds)
                 });
 
-                // Add a hover effect to indicate clickable points
-                map.on('mouseenter', 'publicArt', function () {
+                // Change the cursor to a pointer when hovering over cluster or unclustered point
+                map.on('mouseenter', 'clusters', function () {
                     map.getCanvas().style.cursor = 'pointer';
                 });
-
-                // Reset cursor when not hovering over clickable points
-                map.on('mouseleave', 'publicArt', function () {
+                map.on('mouseleave', 'clusters', function () {
+                    map.getCanvas().style.cursor = '';
+                });
+                map.on('mouseenter', 'unclustered-point', function () {
+                    map.getCanvas().style.cursor = 'pointer';
+                });
+                map.on('mouseleave', 'unclustered-point', function () {
                     map.getCanvas().style.cursor = '';
                 });
             });
