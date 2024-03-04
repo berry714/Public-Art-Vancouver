@@ -23,132 +23,147 @@
             zoom: 10
         });
 
+        let selectedFeatureId = null;
+
         map.on('load', function () {
             // Load the custom icon
-            map.loadImage('icons/art-gallery.png', function (error, image) {
+            map.loadImage('art-gallery.png', function (error, image) {
                 if (error) throw error;
 
                 // Add the custom icon to the map style.
                 map.addImage('art-gallery-icon', image);
 
-                // Add the public art data source
-                map.addSource('publicArt', {
-                    type: 'geojson',
-                    data: 'joined_public_art.geojson',
-                    cluster: true, // Enable clustering
-                    clusterMaxZoom: 14, // Max zoom to cluster points on
-                    clusterRadius: 50 // Radius of each cluster when clustering points
-                });
+                // Load the custom selected icon
+                map.loadImage('art-gallery-yellow.png', function (err, selectedImage) {
+                    if (err) throw err;
 
-                // Add the clustered public art layer
-                map.addLayer({
-                    id: 'clusters',
-                    type: 'circle',
-                    source: 'publicArt',
-                    filter: ['has', 'point_count'], // Only display clusters
-                    paint: {
-                        'circle-color': [
-                            'step',
-                            ['get', 'point_count'],
-                            '#51bbd6',
-                            10,
-                            '#f1f075',
-                            20,
-                            '#f28cb1'
-                        ],
-                        'circle-radius': [
-                            'step',
-                            ['get', 'point_count'],
-                            20,
-                            10,
-                            30,
-                            20,
-                            40
-                        ]
-                    }
-                });
+                    map.addImage('art-gallery-selected-icon', selectedImage);
 
-                // Add the cluster count layer
-                map.addLayer({
-                    id: 'cluster-count',
-                    type: 'symbol',
-                    source: 'publicArt',
-                    filter: ['has', 'point_count'],
-                    layout: {
-                        'text-field': '{point_count_abbreviated}',
-                        'text-size': 12
-                    }
-                });
-
-                // Add the unclustered public art layer
-                map.addLayer({
-                    id: 'unclustered-point',
-                    type: 'symbol',
-                    source: 'publicArt',
-                    filter: ['!', ['has', 'point_count']],
-                    layout: {
-                        'icon-image': 'art-gallery-icon',
-                        'icon-size': 0.5
-                    }
-                });
-
-                // Popup
-                map.on('click', 'clusters', function (e) {
-                    const features = map.queryRenderedFeatures(e.point, {
-                        layers: ['clusters']
+                    // Add the public art data source
+                    map.addSource('publicArt', {
+                        type: 'geojson',
+                        data: 'joined_public_art.geojson',
+                        cluster: true, // Enable clustering
+                        clusterMaxZoom: 14, // Max zoom to cluster points on
+                        clusterRadius: 50 // Radius of each cluster when clustering points
                     });
-                    const clusterId = features[0].properties.cluster_id;
-                    map.getSource('publicArt').getClusterExpansionZoom(
-                        clusterId,
-                        function (err, zoom) {
-                            if (err) return;
 
-                            map.easeTo({
-                                center: features[0].geometry.coordinates,
-                                zoom: zoom
-                            });
+                    // Add the clustered public art layer
+                    map.addLayer({
+                        id: 'clusters',
+                        type: 'circle',
+                        source: 'publicArt',
+                        filter: ['has', 'point_count'], // Only display clusters
+                        paint: {
+                            'circle-color': [
+                                'step',
+                                ['get', 'point_count'],
+                                '#51bbd6',
+                                10,
+                                '#f1f075',
+                                20,
+                                '#f28cb1'
+                            ],
+                            'circle-radius': [
+                                'step',
+                                ['get', 'point_count'],
+                                20,
+                                10,
+                                30,
+                                20,
+                                40
+                            ]
                         }
-                    );
-                });
+                    });
 
-                map.on('click', 'unclustered-point', function (e) {
-                    const properties = e.features[0].properties;
-                    const popupContent = `
-                        <div style="max-height: 300px; overflow-y: auto;">
-                            <h3><strong>${properties.title_of_work}</strong></h3>
-                            <span><strong>Artists:</strong> ${properties.ArtistNames || 'N/A'}</span><br>
-                            <span><strong>Year:</strong> ${properties.yearofinstallation || 'N/A'}</span><br>
-                            <span><strong>Project Statement:</strong> ${properties.artistprojectstatement || 'N/A'}</span><br>
-                            <a href="${properties.url}" target="_blank">More details</a>
-                        </div>
-                    `;
-
-                    const popup = new mapboxgl.Popup()
-                        .setLngLat(e.features[0].geometry.coordinates)
-                        .setHTML(popupContent)
-                        .addTo(map);
-
-                    // Add a delay to ensure that the scroll position is set after the content has been fully rendered
-                    setTimeout(() => {
-                        const popupContentDiv = document.querySelector('.mapboxgl-popup-content > div');
-                        if (popupContentDiv) {
-                            popupContentDiv.scrollTop = 0;
+                    // Add the cluster count layer
+                    map.addLayer({
+                        id: 'cluster-count',
+                        type: 'symbol',
+                        source: 'publicArt',
+                        filter: ['has', 'point_count'],
+                        layout: {
+                            'text-field': '{point_count_abbreviated}',
+                            'text-size': 12
                         }
-                    }, 10); // delay (in milliseconds)
-                });
+                    });
 
-                // Change the cursor to a pointer when hovering over cluster or unclustered point
-                map.on('mouseenter', 'clusters', function () {
-                    map.getCanvas().style.cursor = 'pointer';
-                });
-                map.on('mouseleave', 'clusters', function () {
-                    map.getCanvas().style.cursor = '';
-                });
-                map.on('mouseenter', 'unclustered-point', function () {
-                    map.getCanvas().style.cursor = 'pointer';
-                });
-                map.on('mouseleave', 'unclustered-point', function () {
-                    map.getCanvas().style.cursor = '';
+                    // Add the unclustered public art layer
+                    map.addLayer({
+                        id: 'unclustered-point',
+                        type: 'symbol',
+                        source: 'publicArt',
+                        filter: ['!', ['has', 'point_count']],
+                        layout: {
+                            'icon-image': ['case',
+                                ['==', ['get', 'id'], selectedFeatureId], // Check if the feature ID matches the selected one
+                                'art-gallery-selected-icon', // Use the selected icon
+                                'art-gallery-icon' // Use the default icon
+                            ],
+                            'icon-size': 0.5
+                        }
+                    });
+
+                    // Popup
+                    map.on('click', 'clusters', function (e) {
+                        const features = map.queryRenderedFeatures(e.point, {
+                            layers: ['clusters']
+                        });
+                        const clusterId = features[0].properties.cluster_id;
+                        map.getSource('publicArt').getClusterExpansionZoom(
+                            clusterId,
+                            function (err, zoom) {
+                                if (err) return;
+
+                                map.easeTo({
+                                    center: features[0].geometry.coordinates,
+                                    zoom: zoom
+                                });
+                            }
+                        );
+                    });
+
+                    map.on('click', 'unclustered-point', function (e) {
+                        const properties = e.features[0].properties;
+                        selectedFeatureId = properties.id; // Set the selected feature ID
+
+                        const popupContent = `
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <h3><strong>${properties.title_of_work}</strong></h3>
+                                <span><strong>Artists:</strong> ${properties.ArtistNames || 'N/A'}</span><br>
+                                <span><strong>Year:</strong> ${properties.yearofinstallation || 'N/A'}</span><br>
+                                <span><strong>Project Statement:</strong> ${properties.artistprojectstatement || 'N/A'}</span><br>
+                                <a href="${properties.url}" target="_blank">More details</a>
+                            </div>
+                        `;
+
+                        const popup = new mapboxgl.Popup()
+                            .setLngLat(e.features[0].geometry.coordinates)
+                            .setHTML(popupContent)
+                            .addTo(map);
+
+                        // Add a delay to ensure that the scroll position is set after the content has been fully rendered
+                        setTimeout(() => {
+                            const popupContentDiv = document.querySelector('.mapboxgl-popup-content > div');
+                            if (popupContentDiv) {
+                                popupContentDiv.scrollTop = 0;
+                            }
+                        }, 10); // delay (in milliseconds)
+                    });
+
+                    // Change the cursor to a pointer when hovering over cluster or unclustered point
+                    map.on('mouseenter', 'clusters', function () {
+                        map.getCanvas().style.cursor = 'pointer';
+                    });
+                    map.on('mouseleave', 'clusters', function () {
+                        map.getCanvas().style.cursor = '';
+                    });
+                    map.on('mouseenter', 'unclustered-point', function () {
+                        map.getCanvas().style.cursor = 'pointer';
+                    });
+                    map.on('mouseleave', 'unclustered-point', function () {
+                        map.getCanvas().style.cursor = '';
+                    });
                 });
             });
         });
