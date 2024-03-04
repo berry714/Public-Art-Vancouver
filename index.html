@@ -25,12 +25,12 @@
 
         map.on('load', function () {
             map.loadImage(
-                'https://docs.mapbox.com/mapbox-gl-js/assets/cat.png',
+                'https://raw.githubusercontent.com/mapbox/maki/main/icons/art-gallery.svg',
                 (error, image) => {
                     if (error) throw error;
 
                     // Add the image to the map style.
-                    map.addImage('cat', image);
+                    map.addImage('art', image);
 
                     map.addSource('publicArt', {
                         type: 'geojson',
@@ -42,7 +42,7 @@
                         type: 'symbol',
                         source: 'publicArt',
                         layout: {
-                            'icon-image': 'cat', // reference the image
+                            'icon-image': 'art', // reference the image
                             'icon-size': 0.25
                         }
                     });
