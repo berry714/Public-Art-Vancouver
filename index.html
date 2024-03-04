@@ -37,21 +37,23 @@
                     data: 'joined_public_art.geojson'
                 });
 
-                // Add the public art layer
-                map.addLayer({
-                    id: 'publicArt',
-                    type: 'symbol',
-                    source: 'publicArt',
-                    layout: {
-                        'icon-image': 'art-gallery-icon', // reference the custom icon
-                        'icon-size': {
-                            stops: [
-                                [10, 1], // Adjust the size at different zoom levels
-                                [15, 2]
-                            ]
-                        }
-                    }
-                });
+             // Add the public art layer
+            map.addLayer({
+                id: 'publicArt',
+                type: 'symbol',
+                source: 'publicArt',
+                layout: {
+                    'icon-image': 'art-gallery-icon', // reference the custom icon
+                    'icon-size': {
+                        stops: [
+                            [10, 1], // Adjust the size at different zoom levels
+                            [15, 2]
+                        ]
+                    },
+                    'icon-allow-overlap': true, // Allow icons to overlap
+                }
+            });
+
 
                 // Popup
                 map.on('click', 'publicArt', function (e) {
