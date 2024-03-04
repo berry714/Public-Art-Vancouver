@@ -31,64 +31,94 @@
                 // Add the image to the map style.
                 map.addImage('art-gallery-icon', image);
 
-                    map.addSource('publicArt', {
-                        type: 'geojson',
-                        data: 'joined_public_art.geojson'
-                    });
+                map.addSource('publicArt', {
+                    type: 'geojson',
+                    data: 'joined_public_art.geojson',
+                    cluster: true, // Enable clustering
+                    clusterRadius: 50, // Radius of each cluster when clustering points
+                });
 
-                    map.addLayer({
-                        id: 'publicArt',
-                        type: 'symbol',
-                        source: 'publicArt',
-                        layout: {
-                            'icon-image': 'art-gallery-icon', // reference the image
-                            'icon-size': 1
-                        },
-                        paint: {
-                        'icon-opacity': 1, // Set opacity to 1 to make sure the icons are fully visible
-                        'icon-color': '#FFA500' // Set the icon color to orange
+                map.addLayer({
+                    id: 'clusters',
+                    type: 'circle',
+                    source: 'publicArt',
+                    filter: ['has', 'point_count'],
+                    paint: {
+                        'circle-color': '#FFA500', // Orange color for clusters
+                        'circle-radius': [
+                            'step',
+                            ['get', 'point_count'],
+                            20, // Small circle radius for fewer points in the cluster
+                            30, // Larger circle radius for more points in the cluster
+                            40 // Adjust this value based on your preference
+                        ]
                     }
-                    });
+                });
 
-                    // Popup
-                    map.on('click', 'publicArt', function (e) {
-                        const properties = e.features[0].properties;
-                        const popupContent = `
-                            <div style="max-height: 300px; overflow-y: auto;">
-                                <h3><strong>${properties.title_of_work}</strong></h3>
-                                <span><strong>Artists:</strong> ${properties.ArtistNames || 'N/A'}</span><br>
-                                <span><strong>Year:</strong> ${properties.yearofinstallation || 'N/A'}</span><br>
-                                <span><strong>Project Statement:</strong> ${properties.artistprojectstatement || 'N/A'}</span><br>
-                                <a href="${properties.url}" target="_blank">More details</a>
-                            </div>
-                        `;
+                map.addLayer({
+                    id: 'cluster-count',
+                    type: 'symbol',
+                    source: 'publicArt',
+                    filter: ['has', 'point_count'],
+                    layout: {
+                        'text-field': '{point_count_abbreviated}', // Show the count of points in the cluster
+                        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                        'text-size': 12
+                    }
+                });
 
-                        const popup = new mapboxgl.Popup()
-                            .setLngLat(e.features[0].geometry.coordinates)
-                            .setHTML(popupContent)
-                            .addTo(map);
+                map.addLayer({
+                    id: 'unclustered-point',
+                    type: 'symbol',
+                    source: 'publicArt',
+                    filter: ['!', ['has', 'point_count']],
+                    layout: {
+                        'icon-image': 'art-gallery-icon',
+                        'icon-size': 1
+                    },
+                    paint: {
+                        'icon-opacity': 1, // Set opacity to 1 to make sure the icons are fully visible
+                    }
+                });
 
-                        // Add a delay to ensure that the scroll position is set after the content has been fully rendered
-                        setTimeout(() => {
-                            const popupContentDiv = document.querySelector('.mapboxgl-popup-content > div');
-                            if (popupContentDiv) {
-                                popupContentDiv.scrollTop = 0;
-                            }
-                        }, 10); // delay (in milliseconds)
-                    });
+                // Popup
+                map.on('click', 'unclustered-point', function (e) {
+                    const properties = e.features[0].properties;
+                    const popupContent = `
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <h3><strong>${properties.title_of_work}</strong></h3>
+                            <span><strong>Artists:</strong> ${properties.ArtistNames || 'N/A'}</span><br>
+                            <span><strong>Year:</strong> ${properties.yearofinstallation || 'N/A'}</span><br>
+                            <span><strong>Project Statement:</strong> ${properties.artistprojectstatement || 'N/A'}</span><br>
+                            <a href="${properties.url}" target="_blank">More details</a>
+                        </div>
+                    `;
 
-                    // Add a hover effect to indicate clickable points
-                    map.on('mouseenter', 'publicArt', function () {
-                        map.getCanvas().style.cursor = 'pointer';
-                    });
+                    const popup = new mapboxgl.Popup()
+                        .setLngLat(e.features[0].geometry.coordinates)
+                        .setHTML(popupContent)
+                        .addTo(map);
 
-                    // Reset cursor when not hovering over clickable points
-                    map.on('mouseleave', 'publicArt', function () {
-                        map.getCanvas().style.cursor = '';
-                    });
-                }
-            );
+                    // Add a delay to ensure that the scroll position is set after the content has been fully rendered
+                    setTimeout(() => {
+                        const popupContentDiv = document.querySelector('.mapboxgl-popup-content > div');
+                        if (popupContentDiv) {
+                            popupContentDiv.scrollTop = 0;
+                        }
+                    }, 10); // delay (in milliseconds)
+                });
+
+                // Add a hover effect to indicate clickable points
+                map.on('mouseenter', 'unclustered-point', function () {
+                    map.getCanvas().style.cursor = 'pointer';
+                });
+
+                // Reset cursor when not hovering over clickable points
+                map.on('mouseleave', 'unclustered-point', function () {
+                    map.getCanvas().style.cursor = '';
+                });
             });
+        });
     </script>
 </body>
 </html>
