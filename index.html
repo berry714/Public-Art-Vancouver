@@ -29,7 +29,7 @@
                 if (error) throw error;
 
                 // Add the image to the map style.
-                map.addImage('art-gallery', image);
+                map.addImage('art-gallery-icon', image);
 
                     map.addSource('publicArt', {
                         type: 'geojson',
@@ -41,7 +41,7 @@
                         type: 'symbol',
                         source: 'publicArt',
                         layout: {
-                            'icon-image': 'art', // reference the image
+                            'icon-image': 'art-gallery-icon', // reference the image
                             'icon-size': 1
                         }
                     });
