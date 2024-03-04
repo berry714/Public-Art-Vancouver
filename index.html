@@ -36,7 +36,7 @@
                     type: 'geojson',
                     data: 'joined_public_art.geojson',
                     cluster: true, // Enable clustering
-                    clusterMaxZoom: 13, // Max zoom to cluster points on
+                    clusterMaxZoom: 14, // Max zoom to cluster points on
                     clusterRadius: 40 // Radius of each cluster when clustering points
                 });
 
@@ -113,7 +113,7 @@
 
                             map.easeTo({
                                 center: features[0].geometry.coordinates,
-                                zoom: zoom + 2
+                                zoom: zoom + 1
                             });
                         }
                     );
