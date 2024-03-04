@@ -24,70 +24,37 @@
         });
 
         map.on('load', function () {
-            // Load the image for the art gallery icon
+            // Load the custom icon
             map.loadImage('art-gallery.png', function (error, image) {
                 if (error) throw error;
 
-                // Add the image to the map style.
+                // Add the custom icon to the map style.
                 map.addImage('art-gallery-icon', image);
 
+                // Add the public art data source
                 map.addSource('publicArt', {
                     type: 'geojson',
-                    data: 'joined_public_art.geojson',
-                    cluster: true,
-                    clusterMaxZoom: 14, // Max zoom to cluster points on
-                    clusterRadius: 50 // Radius of each cluster when clustering points (pixels)
+                    data: 'joined_public_art.geojson'
                 });
 
+                // Add the public art layer
                 map.addLayer({
-                    id: 'clusters',
+                    id: 'publicArt',
                     type: 'symbol',
                     source: 'publicArt',
-                    filter: ['has', 'point_count'],
                     layout: {
-                        'icon-image': 'art-gallery-icon', // Use the art gallery icon
-                        'icon-size': 0.5
-                    }
-                });
-
-                map.addLayer({
-                    id: 'cluster-count',
-                    type: 'symbol',
-                    source: 'publicArt',
-                    filter: ['has', 'point_count'],
-                    layout: {
-                        'text-field': '{point_count_abbreviated}',
-                        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                        'text-size': 12
-                    }
-                });
-
-                map.addLayer({
-                    id: 'unclustered-point',
-                    type: 'symbol',
-                    source: 'publicArt',
-                    filter: ['!', ['has', 'point_count']],
-                    layout: {
-                        'icon-image': 'art-gallery-icon', // Use the art gallery icon for individual points
-                        'icon-size': 0.5
+                        'icon-image': 'art-gallery-icon', // reference the custom icon
+                        'icon-size': {
+                            stops: [
+                                [10, 0.5], // Adjust the size at different zoom levels
+                                [15, 1.5]
+                            ]
+                        }
                     }
                 });
 
                 // Popup
-                map.on('click', 'clusters', function (e) {
-                    const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-                    const clusterId = features[0].properties.cluster_id;
-                    map.getSource('publicArt').getClusterExpansionZoom(clusterId, function (err, zoom) {
-                        if (err) return;
-
-                        map.easeTo({
-                            center: features[0].geometry.coordinates,
-                            zoom: zoom
-                        });
-                    });
-                });
-
-                map.on('click', 'unclustered-point', function (e) {
+                map.on('click', 'publicArt', function (e) {
                     const properties = e.features[0].properties;
                     const popupContent = `
                         <div style="max-height: 300px; overflow-y: auto;">
@@ -114,11 +81,12 @@
                 });
 
                 // Add a hover effect to indicate clickable points
-                map.on('mouseenter', 'clusters', function () {
+                map.on('mouseenter', 'publicArt', function () {
                     map.getCanvas().style.cursor = 'pointer';
                 });
 
-                map.on('mouseleave', 'clusters', function () {
+                // Reset cursor when not hovering over clickable points
+                map.on('mouseleave', 'publicArt', function () {
                     map.getCanvas().style.cursor = '';
                 });
             });
