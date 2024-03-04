@@ -97,12 +97,13 @@
                         layout: {
                             'icon-image': ['case',
                                 ['==', ['get', 'id'], selectedFeatureId], // Check if the feature ID matches the selected one
-                                'icons/art-gallery.png', // Use the selected icon
-                                'icons/art-gallery-yellow.png' // Use the default icon
+                                'icons/art-gallery-yellow.png', // Use the selected icon
+                                'icons/art-gallery.png' // Use the default icon
                             ],
-                            'icon-size': 0.5
+                            'icon-size': 1
                         }
                     });
+
 
                     // Popup
                     map.on('click', 'clusters', function (e) {
