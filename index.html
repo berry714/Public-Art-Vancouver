@@ -24,9 +24,12 @@
         });
 
         map.on('load', function () {
+            // Load the image
+            map.loadImage('art-gallery.png', function (error, image) {
+                if (error) throw error;
 
-                    // Add the image to the map style.
-                    map.addImage('art', 'art-gallery.png');
+                // Add the image to the map style.
+                map.addImage('art-gallery', image);
 
                     map.addSource('publicArt', {
                         type: 'geojson',
@@ -81,7 +84,7 @@
                     });
                 }
             );
-        ;
+            });
     </script>
 </body>
 </html>
