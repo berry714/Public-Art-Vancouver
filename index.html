@@ -45,11 +45,11 @@
 
         map.on('load', function () {
             // Load the custom icon
-            map.loadImage('icons/art-gallery.png', function (error, image) {
+            map.loadImage('icons/art-gallery-yellow.png', function (error, image) {
                 if (error) throw error;
 
                 // Add the custom icon to the map style.
-                map.addImage('icons/art-gallery.png', image);
+                map.addImage('icons/art-gallery-yellow.png', image);
 
                 // Add the public art data source
                 map.addSource('publicArt', {
@@ -107,7 +107,7 @@
                     source: 'publicArt',
                     filter: ['!', ['has', 'point_count']],
                     layout: {
-                        'icon-image': 'icons/art-gallery.png', // specify the image directly
+                        'icon-image': 'icons/art-gallery-yellow.png', // specify the image directly
                         'icon-size': [
                             'interpolate',
                             ['linear'],
