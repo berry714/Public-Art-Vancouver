@@ -1,0 +1,22 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Replace Mapbox Access Token
+        run: sed -i "s/REPLACE_WITH_MAPBOX_ACCESS_TOKEN/${{ secrets.MAPBOX_ACCESS_TOKEN }}/g" path/to/your/index.html
+
+      - name: Build and Deploy
+        run: |
+          # Add your build and deploy commands here
+          # For example: npm install, npm run build, etc.
