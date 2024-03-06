@@ -2,6 +2,8 @@ Exploratory Lab 1: Web Cartography
 
 Link to map: https://berry714.github.io/Public-Art-Vancouver/
 
+![alt text](https://github.com/berry714/Public-Art-Vancouver/screenshot.png "Public Art Locations")
+
 Reflective Analysis: 
 This map was designed for users exploring public art locations in Vancouver. It caters to the needs of individuals seeking information about public art pieces, including location, details about artists, installation years, and project statements. Additional information about each art installation is available in a hyperlink at the bottom of each popup blurb, under ‘More details’, including photos of the art. The user experience is centred around ease of navigation and obtaining comprehensive information about each art location. 
 
