@@ -13,7 +13,7 @@
 
         #map {
             width: 100%;
-            height: 90vh; /* Adjust the percentage based on your preference */
+            height: 90vh;
         }
 
         #map-title {
@@ -26,7 +26,7 @@
         #data-source {
             text-align: center;
             font-size: 12px;
-            color: #666; /* Adjust the color as needed */
+            color: #666;
         }
     </style>
 </head>
@@ -44,23 +44,19 @@
         });
 
         map.on('load', function () {
-            // Load the custom icon
             map.loadImage('icons/art-gallery-yellow.png', function (error, image) {
                 if (error) throw error;
 
-                // Add the custom icon to the map style.
                 map.addImage('icons/art-gallery-yellow.png', image);
 
-                // Add the public art data source
                 map.addSource('publicArt', {
                     type: 'geojson',
                     data: 'joined_public_art.geojson',
-                    cluster: true, // Enable clustering
-                    clusterMaxZoom: 14, // Max zoom to cluster points on
-                    clusterRadius: 40 // Radius of each cluster when clustering points
+                    cluster: true,
+                    clusterMaxZoom: 14,
+                    clusterRadius: 40
                 });
 
-                // Add the clustered public art layer
                 map.addLayer({
                     id: 'clusters',
                     type: 'circle',
@@ -88,7 +84,6 @@
                     }
                 });
 
-                // Add the cluster count layer
                 map.addLayer({
                     id: 'cluster-count',
                     type: 'symbol',
@@ -100,20 +95,19 @@
                     }
                 });
 
-                // Add the unclustered public art layer
                 map.addLayer({
                     id: 'unclustered-point',
                     type: 'symbol',
                     source: 'publicArt',
                     filter: ['!', ['has', 'point_count']],
                     layout: {
-                        'icon-image': 'icons/art-gallery-yellow.png', // specify the image directly
+                        'icon-image': 'icons/art-gallery-yellow.png',
                         'icon-size': [
                             'interpolate',
                             ['linear'],
                             ['zoom'],
-                            10, 0.7, // default size at zoom level 10
-                            18, 1.4   // increase size at zoom level 18
+                            10, 0.7, // Size at zoom level 10
+                            18, 1.4   // Size at zoom level 18
                         ],
                         'icon-allow-overlap': true
                     }
@@ -156,7 +150,6 @@
                         .setHTML(popupContent)
                         .addTo(map);
 
-                    // Add a delay to ensure that the scroll position is set after the content has been fully rendered
                     setTimeout(() => {
                         const popupContentDiv = document.querySelector('.mapboxgl-popup-content > div');
                         if (popupContentDiv) {
@@ -165,7 +158,6 @@
                     }, 10); // delay (in milliseconds)
                 });
 
-                // Change the cursor to a pointer when hovering over cluster or unclustered point
                 map.on('mouseenter', 'clusters', function () {
                     map.getCanvas().style.cursor = 'pointer';
                 });
